@@ -28,7 +28,7 @@ const App = () => {
 
     if (isLoading) {
       return (
-        <div style={skeletonWrapperStyle}>
+        <div style={skeletonWrapperStyle} className="skeleton">
           <div style={skeletonAvatarStyle} />
           <div style={skeletonLineStyle} />
           <div style={{ ...skeletonLineStyle, width: "80%" }} />
@@ -39,7 +39,7 @@ const App = () => {
 
     if (githubProfileData && githubProfileData.message == "Not Found") {
       return (
-        <div style={notFoundStyle}>
+        <div style={notFoundStyle} className="not-found">
           <h1>User Not Found</h1>
         </div>
       );
@@ -48,7 +48,7 @@ const App = () => {
     const profileUrl = githubProfileData.html_url;
 
     return (
-      <div style={cardStyle}>
+      <div style={cardStyle} className="card">
         <img
           src={githubProfileData.avatar_url}
           alt={githubProfileData.name}
@@ -70,15 +70,16 @@ const App = () => {
   };
 
   return (
-    <div style={containerStyle}>
+    <div style={containerStyle} className="container">
       <form onSubmit={getUserProfile} style={formStyle}>
-        <h1 style={headingStyle}>GitHub Fetcher</h1>
+        <h1 className="heading" style={headingStyle}>GitHub Fetcher</h1>
         <input
           type="text"
           placeholder="Search your github username"
           value={githubUserName}
           onChange={(e) => setGithubUserName(e.target.value)}
           style={inputStyle}
+          className="input"
         />
       </form>
       {uiRender()}
@@ -105,14 +106,16 @@ const formStyle = {
 };
 
 const headingStyle = {
-  margin: "0",
-  fontSize: "28px",
-  fontWeight: "700",
-  color: "#f1f5f9",
+  margin: "0 0 -4px 0",
+  fontSize: "32px",
+  fontWeight: "900",
+  color: "#ffffff",
+  fontFamily: '"Poppins", system-ui, sans-serif',
 };
 
 const inputStyle = {
-  width: "360px",
+  width: "100%",
+  maxWidth: "360px",
   padding: "14px 20px",
   fontSize: "16px",
   border: "2px solid #60a5fa",
@@ -121,7 +124,6 @@ const inputStyle = {
   backgroundColor: "#ffffff",
   color: "#0f172a",
   boxShadow: "0 8px 24px rgba(0, 0, 0, 0.2)",
-  transition: "border-color 0.2s, box-shadow 0.2s",
 };
 
 const skeletonWrapperStyle = {

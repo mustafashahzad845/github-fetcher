@@ -1,0 +1,38 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Poppins", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px !important;
+    gap: 20px !important;
+  }
+
+  .heading {
+    font-size: 24px !important;
+    margin: 0 !important;
+  }
+
+  .card,
+  .skeleton,
+  .not-found {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
