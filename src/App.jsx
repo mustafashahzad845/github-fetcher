@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const App = () => {
   const [githubUserName, setGithubUserName] = useState("");
@@ -28,19 +28,42 @@ const App = () => {
 
     if (isLoading) {
       return (
-        <div style={skeletonWrapperStyle} className="skeleton">
-          <div style={skeletonAvatarStyle} />
-          <div style={skeletonLineStyle} />
-          <div style={{ ...skeletonLineStyle, width: "80%" }} />
-          <div style={skeletonLineStyle} />
+        <div className="skeleton" aria-busy="true" aria-label="Loading profile">
+          <div className="skeleton__avatar" />
+          <div className="skeleton__line skeleton__line--medium" />
+          <div className="skeleton__line skeleton__line--short" />
+          <div className="skeleton__line skeleton__line--medium" />
         </div>
       );
     }
 
-    if (githubProfileData && githubProfileData.message == "Not Found") {
+    if (githubProfileData && githubProfileData.message === "Not Found") {
       return (
-        <div style={notFoundStyle} className="not-found">
-          <h1>User Not Found</h1>
+        <div className="not-found" role="alert">
+          <svg className="not-found__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <h2 className="not-found__title">User Not Found</h2>
+          <p className="not-found__message">
+            No GitHub profile exists for <strong>{githubUserName}</strong>.
+            Check the spelling or try another username.
+          </p>
+          <button
+            type="button"
+            className="not-found__action"
+            onClick={() => {
+              setSearchAttempted(false);
+              setGithubProfileData(null);
+              setGithubUserName("");
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M3 12h18M3 12l4 4M3 12l4-4" />
+            </svg>
+            Try Another
+          </button>
         </div>
       );
     }
@@ -48,171 +71,109 @@ const App = () => {
     const profileUrl = githubProfileData.html_url;
 
     return (
-      <div style={cardStyle} className="card">
-        <img
-          src={githubProfileData.avatar_url}
-          alt={githubProfileData.name}
-          style={avatarStyle}
-        />
-        <h1 style={nameStyle}>{githubProfileData.name}</h1>
-        {githubProfileData.bio && <p style={bioStyle}>{githubProfileData.bio}</p>}
-        {githubProfileData.company && <p style={companyStyle}>{githubProfileData.company}</p>}
+      <article className="card">
+        <div className="card__avatar-wrapper">
+          <div className="card__avatar-ring" aria-hidden="true" />
+          <img
+            src={githubProfileData.avatar_url}
+            alt=""
+            className="card__avatar"
+            loading="lazy"
+          />
+        </div>
+        <h2 className="card__name">{githubProfileData.name || githubProfileData.login}</h2>
+        <p className="card__username">@{githubProfileData.login}</p>
+        {githubProfileData.bio && (
+          <p className="card__bio">{githubProfileData.bio}</p>
+        )}
+        <div className="card__meta">
+          {githubProfileData.company && (
+            <div className="card__meta-item card__meta-item--company">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d="M21 13.65A9 9 0 0 1 7.35 3M3 10.35A9 9 0 0 0 16.65 21" />
+                <path d="M15.54 17.25A5 5 0 0 0 18 12.75" />
+              </svg>
+              {githubProfileData.company}
+            </div>
+          )}
+          {githubProfileData.location && (
+            <div className="card__meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+              </svg>
+              {githubProfileData.location}
+            </div>
+          )}
+        </div>
         <a
           href={profileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          style={viewButtonStyle}
+          className="card__action"
+          aria-label={`View ${githubProfileData.login}'s GitHub profile`}
         >
           View on GitHub
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
         </a>
-      </div>
+      </article>
     );
   };
 
   return (
-    <div style={containerStyle} className="container">
-      <form onSubmit={getUserProfile} style={formStyle}>
-        <h1 className="heading" style={headingStyle}>GitHub Fetcher</h1>
-        <input
-          type="text"
-          placeholder="Search your github username"
-          value={githubUserName}
-          onChange={(e) => setGithubUserName(e.target.value)}
-          style={inputStyle}
-          className="input"
-        />
+    <div className="container">
+      <header className="header">
+        <div className="header__brand">
+          <div className="header__logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" />
+            </svg>
+          </div>
+          <h1 className="header__title">GitHub Fetcher</h1>
+        </div>
+        <p className="header__subtitle">Search any GitHub profile instantly</p>
+      </header>
+
+      <form className="search-form" onSubmit={getUserProfile} noValidate>
+        <label htmlFor="github-search" className="search-form__label">
+          GitHub Username
+        </label>
+        <div className="search-form__input-wrapper">
+          <svg className="search-form__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            type="search"
+            id="github-search"
+            placeholder="Enter a GitHub username"
+            value={githubUserName}
+            onChange={(e) => setGithubUserName(e.target.value)}
+            className="search-form__input"
+            autoComplete="off"
+            autoFocus
+            disabled={isLoading}
+            aria-describedby="search-hint"
+          />
+        </div>
+        <p id="search-hint" className="search-form__hint">
+          <kbd>Enter</kbd> to search
+        </p>
       </form>
+
       {uiRender()}
+
+      <footer className="footer">
+        <p className="footer__text">
+          Data from <a href="https://docs.github.com/en/rest" target="_blank" rel="noopener noreferrer" className="footer__link">GitHub API</a>
+        </p>
+      </footer>
     </div>
   );
-};
-
-const containerStyle = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  minHeight: "100vh",
-  padding: "32px",
-  gap: "28px",
-  background: "linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e40af 100%)",
-  color: "#f1f5f9",
-};
-
-const formStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-};
-
-const headingStyle = {
-  margin: "0 0 -4px 0",
-  fontSize: "32px",
-  fontWeight: "900",
-  color: "#ffffff",
-  fontFamily: '"Poppins", system-ui, sans-serif',
-};
-
-const inputStyle = {
-  width: "100%",
-  maxWidth: "360px",
-  padding: "14px 16px",
-  fontSize: "16px",
-  border: "2px solid #60a5fa",
-  borderRadius: "16px",
-  outline: "none",
-  backgroundColor: "#ffffff",
-  color: "#0f172a",
-  boxShadow: "0 8px 24px rgba(0, 0, 0, 0.2)",
-};
-
-const skeletonWrapperStyle = {
-  padding: "24px",
-  borderRadius: "12px",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-  textAlign: "center",
-  maxWidth: "360px",
-  width: "100%",
-  backgroundColor: "#1e293b",
-};
-
-const skeletonAvatarStyle = {
-  width: "96px",
-  height: "96px",
-  borderRadius: "50%",
-  backgroundColor: "#334155",
-  margin: "0 auto 16px auto",
-};
-
-const skeletonLineStyle = {
-  height: "16px",
-  borderRadius: "4px",
-  backgroundColor: "#334155",
-  marginBottom: "8px",
-};
-
-const cardStyle = {
-  padding: "24px",
-  borderRadius: "12px",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-  textAlign: "center",
-  maxWidth: "360px",
-  width: "100%",
-  backgroundColor: "#1e293b",
-  border: "1px solid #334155",
-};
-
-const avatarStyle = {
-  width: "96px",
-  height: "96px",
-  borderRadius: "50%",
-  objectFit: "cover",
-  display: "block",
-  margin: "0 auto 12px auto",
-};
-
-const nameStyle = {
-  margin: "0 0 8px 0",
-  fontSize: "20px",
-  fontWeight: "600",
-  color: "#f1f5f9",
-};
-
-const bioStyle = {
-  margin: "4px 0 4px 0",
-  color: "#cbd5e1",
-  fontSize: "14px",
-};
-
-const companyStyle = {
-  margin: "4px 0 4px 0",
-  color: "#94a3b8",
-  fontSize: "14px",
-};
-
-const viewButtonStyle = {
-  display: "inline-block",
-  marginTop: "16px",
-  padding: "8px 16px",
-  fontSize: "14px",
-  fontWeight: "600",
-  color: "#60a5fa",
-  border: "1px solid #3b82f6",
-  borderRadius: "6px",
-  textDecoration: "none",
-  transition: "background-color 0.2s",
-};
-
-const notFoundStyle = {
-  padding: "40px",
-  textAlign: "center",
-  color: "#fca5a5",
-  fontSize: "18px",
-  backgroundColor: "#1e293b",
-  borderRadius: "12px",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-  maxWidth: "360px",
-  width: "100%",
 };
 
 export default App;
