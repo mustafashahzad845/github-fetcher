@@ -116,7 +116,7 @@ const headingStyle = {
 const inputStyle = {
   width: "100%",
   maxWidth: "360px",
-  padding: "14px 20px",
+  padding: "14px 16px",
   fontSize: "16px",
   border: "2px solid #60a5fa",
   borderRadius: "16px",
