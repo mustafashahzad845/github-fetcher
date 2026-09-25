@@ -72,9 +72,10 @@ const App = () => {
   return (
     <div style={containerStyle}>
       <form onSubmit={getUserProfile} style={formStyle}>
+        <h1 style={headingStyle}>GitHub Fetcher</h1>
         <input
           type="text"
-          placeholder="username"
+          placeholder="Search your github username"
           value={githubUserName}
           onChange={(e) => setGithubUserName(e.target.value)}
           style={inputStyle}
@@ -99,7 +100,15 @@ const containerStyle = {
 
 const formStyle = {
   display: "flex",
+  flexDirection: "column",
   gap: "8px",
+};
+
+const headingStyle = {
+  margin: "0",
+  fontSize: "28px",
+  fontWeight: "700",
+  color: "#f1f5f9",
 };
 
 const inputStyle = {
