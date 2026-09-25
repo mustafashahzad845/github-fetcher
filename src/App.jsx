@@ -1,75 +1,214 @@
 import React, { useState } from "react";
+
 const App = () => {
   const [githubUserName, setGithubUserName] = useState("");
-  const [githubProfileData , setGithubProfileData] = useState("")
+  const [githubProfileData, setGithubProfileData] = useState(null);
 
-  const getUserProfile = async () => {
-    try{
-console.log(githubUserName, "githubUserName");
-    const userProfile = await fetch(
-      `https://api.github.com/users/${githubUserName}`,
-    ).then((res) => res.json());
-    console.log(userProfile, "userProfile");
-setGithubProfileData(userProfile)
-    
-    }catch(error){
-        console.log(error);
-        
+  const getUserProfile = async (e) => {
+    e.preventDefault();
+    if (!githubUserName.trim()) return;
+    try {
+      const userProfile = await fetch(
+        `https://api.github.com/users/${githubUserName}`,
+      ).then((res) => res.json());
+      setGithubProfileData(userProfile);
+    } catch (error) {
+      console.log(error);
     }
-    
-  }; 
-  console.log(githubProfileData , "githubProfileData");
-//   console.log(githubUserName);
-const uiRender = ()=>{
+  };
+
+  const cardStyleWithLink = { ...cardStyle, position: "relative", paddingBottom: "48px" };
+
+  const uiRender = () => {
+    if (!githubProfileData) {
+      return (
+        <div style={skeletonWrapperStyle}>
+          <div style={skeletonAvatarStyle} />
+          <div style={skeletonLineStyle} />
+          <div style={{ ...skeletonLineStyle, width: "80%" }} />
+          <div style={skeletonLineStyle} />
+        </div>
+      );
+    }
+
+    if (githubProfileData.message == "Not Found") {
+      return (
+        <div style={notFoundStyle}>
+          <h1>User Not Found</h1>
+        </div>
+      );
+    }
+
+    const profileUrl = githubProfileData.html_url;
 
     return (
- githubProfileData.message == "Not Found" ?  (
-        <div> <h1>User Not Found</ h1></div> 
-    ) : <div>
-    <img width={400} src={githubProfileData.avatar_url} alt="" />
-          <h1>{githubProfileData.name}</h1>
-    <p>{githubProfileData.bio}</p>
-    <p>{githubProfileData.company}</p>
-    
-    </div> 
-    )
-       
- 
+      <div style={cardStyleWithLink}>
+        <img
+          src={githubProfileData.avatar_url}
+          alt={githubProfileData.name}
+          style={avatarStyle}
+        />
+        <h1 style={nameStyle}>{githubProfileData.name}</h1>
+        {githubProfileData.bio && <p style={bioStyle}>{githubProfileData.bio}</p>}
+        {githubProfileData.company && <p style={companyStyle}>{githubProfileData.company}</p>}
+        <a
+          href={profileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={viewButtonStyle}
+        >
+          View on GitHub
+        </a>
+      </div>
+    );
+  };
 
-   
-}
-// return (
-    
-
-      
-
-// )
   return (
-    <div>
-
-    {/* Search Container */}
-    <div>
-          <input
-        style={{ width: "200px" }}
-        type="text"
-        placeholder="Enter your github userName"
-        onChange={(e) => {
-          setGithubUserName(e.target.value);
-        }}
-      />
-      <button onClick={getUserProfile}>Search</button>
-    </div>
-
-{/* Card container */}
-
-{
-    uiRender()
-}
-    
-
+    <div style={containerStyle}>
+      <form onSubmit={getUserProfile} style={formStyle}>
+        <input
+          type="text"
+          placeholder="username"
+          value={githubUserName}
+          onChange={(e) => setGithubUserName(e.target.value)}
+          style={inputStyle}
+        />
+        <button type="submit" style={searchButtonStyle}>
+          Search
+        </button>
+      </form>
+      {uiRender()}
     </div>
   );
+};
 
-    } 
+const containerStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  minHeight: "100vh",
+  padding: "32px",
+  gap: "28px",
+  background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+  color: "#f1f5f9",
+};
+
+const formStyle = {
+  display: "flex",
+  gap: "8px",
+};
+
+const inputStyle = {
+  width: "320px",
+  padding: "12px 16px",
+  fontSize: "16px",
+  border: "1.5px solid #475569",
+  borderRadius: "8px",
+  outline: "none",
+  backgroundColor: "#1e293b",
+  color: "#f1f5f9",
+  transition: "border-color 0.2s",
+};
+
+const searchButtonStyle = {
+  padding: "12px 20px",
+  fontSize: "16px",
+  borderRadius: "8px",
+  border: "none",
+  backgroundColor: "#2563eb",
+  color: "#ffffff",
+  fontWeight: "600",
+  cursor: "pointer",
+  transition: "background-color 0.2s",
+};
+
+const skeletonWrapperStyle = {
+  padding: "24px",
+  borderRadius: "12px",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+  textAlign: "center",
+  maxWidth: "360px",
+  width: "100%",
+  backgroundColor: "#1e293b",
+};
+
+const skeletonAvatarStyle = {
+  width: "96px",
+  height: "96px",
+  borderRadius: "50%",
+  backgroundColor: "#334155",
+  margin: "0 auto 16px auto",
+};
+
+const skeletonLineStyle = {
+  height: "16px",
+  borderRadius: "4px",
+  backgroundColor: "#334155",
+  marginBottom: "8px",
+};
+
+const cardStyle = {
+  padding: "24px",
+  borderRadius: "12px",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+  textAlign: "center",
+  maxWidth: "360px",
+  width: "100%",
+  backgroundColor: "#1e293b",
+  border: "1px solid #334155",
+};
+
+const avatarStyle = {
+  width: "96px",
+  height: "96px",
+  borderRadius: "50%",
+  objectFit: "cover",
+  display: "block",
+  margin: "0 auto 12px auto",
+};
+
+const nameStyle = {
+  margin: "0 0 8px 0",
+  fontSize: "20px",
+  fontWeight: "600",
+  color: "#f1f5f9",
+};
+
+const bioStyle = {
+  margin: "4px 0 4px 0",
+  color: "#cbd5e1",
+  fontSize: "14px",
+};
+
+const companyStyle = {
+  margin: "4px 0 4px 0",
+  color: "#94a3b8",
+  fontSize: "14px",
+};
+
+const viewButtonStyle = {
+  display: "inline-block",
+  marginTop: "16px",
+  padding: "8px 16px",
+  fontSize: "14px",
+  fontWeight: "600",
+  color: "#60a5fa",
+  border: "1px solid #3b82f6",
+  borderRadius: "6px",
+  textDecoration: "none",
+  transition: "background-color 0.2s",
+};
+
+const notFoundStyle = {
+  padding: "40px",
+  textAlign: "center",
+  color: "#fca5a5",
+  fontSize: "18px",
+  backgroundColor: "#1e293b",
+  borderRadius: "12px",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+  maxWidth: "360px",
+  width: "100%",
+};
 
 export default App;
