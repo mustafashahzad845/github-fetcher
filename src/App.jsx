@@ -17,8 +17,6 @@ const App = () => {
     }
   };
 
-  const cardStyleWithLink = { ...cardStyle, position: "relative", paddingBottom: "48px" };
-
   const uiRender = () => {
     if (!githubProfileData) {
       return (
@@ -42,7 +40,7 @@ const App = () => {
     const profileUrl = githubProfileData.html_url;
 
     return (
-      <div style={cardStyleWithLink}>
+      <div style={cardStyle}>
         <img
           src={githubProfileData.avatar_url}
           alt={githubProfileData.name}
@@ -73,9 +71,6 @@ const App = () => {
           onChange={(e) => setGithubUserName(e.target.value)}
           style={inputStyle}
         />
-        <button type="submit" style={searchButtonStyle}>
-          Search
-        </button>
       </form>
       {uiRender()}
     </div>
@@ -86,10 +81,11 @@ const containerStyle = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
+  justifyContent: "center",
   minHeight: "100vh",
   padding: "32px",
   gap: "28px",
-  background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+  background: "linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e40af 100%)",
   color: "#f1f5f9",
 };
 
@@ -99,27 +95,16 @@ const formStyle = {
 };
 
 const inputStyle = {
-  width: "320px",
-  padding: "12px 16px",
+  width: "360px",
+  padding: "14px 20px",
   fontSize: "16px",
-  border: "1.5px solid #475569",
-  borderRadius: "8px",
+  border: "2px solid #60a5fa",
+  borderRadius: "16px",
   outline: "none",
-  backgroundColor: "#1e293b",
-  color: "#f1f5f9",
-  transition: "border-color 0.2s",
-};
-
-const searchButtonStyle = {
-  padding: "12px 20px",
-  fontSize: "16px",
-  borderRadius: "8px",
-  border: "none",
-  backgroundColor: "#2563eb",
-  color: "#ffffff",
-  fontWeight: "600",
-  cursor: "pointer",
-  transition: "background-color 0.2s",
+  backgroundColor: "#ffffff",
+  color: "#0f172a",
+  boxShadow: "0 8px 24px rgba(0, 0, 0, 0.2)",
+  transition: "border-color 0.2s, box-shadow 0.2s",
 };
 
 const skeletonWrapperStyle = {
