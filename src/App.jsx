@@ -3,10 +3,14 @@ import React, { useState } from "react";
 const App = () => {
   const [githubUserName, setGithubUserName] = useState("");
   const [githubProfileData, setGithubProfileData] = useState(null);
+  const [searchAttempted, setSearchAttempted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getUserProfile = async (e) => {
     e.preventDefault();
     if (!githubUserName.trim()) return;
+    setSearchAttempted(true);
+    setIsLoading(true);
     try {
       const userProfile = await fetch(
         `https://api.github.com/users/${githubUserName}`,
@@ -14,11 +18,15 @@ const App = () => {
       setGithubProfileData(userProfile);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const uiRender = () => {
-    if (!githubProfileData) {
+    if (!searchAttempted) return null;
+
+    if (isLoading) {
       return (
         <div style={skeletonWrapperStyle}>
           <div style={skeletonAvatarStyle} />
@@ -29,7 +37,7 @@ const App = () => {
       );
     }
 
-    if (githubProfileData.message == "Not Found") {
+    if (githubProfileData && githubProfileData.message == "Not Found") {
       return (
         <div style={notFoundStyle}>
           <h1>User Not Found</h1>
