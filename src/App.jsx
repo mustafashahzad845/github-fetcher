@@ -1,19 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const DEFAULT_USERNAME = "mustafashahzad845";
 
 const App = () => {
-  const [githubUserName, setGithubUserName] = useState("");
+  const [githubUserName, setGithubUserName] = useState(DEFAULT_USERNAME);
   const [githubProfileData, setGithubProfileData] = useState(null);
-  const [searchAttempted, setSearchAttempted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const getUserProfile = async (e) => {
-    e.preventDefault();
-    if (!githubUserName.trim()) return;
-    setSearchAttempted(true);
+  const fetchProfile = async (username) => {
     setIsLoading(true);
     try {
       const userProfile = await fetch(
-        `https://api.github.com/users/${githubUserName}`,
+        `https://api.github.com/users/${username}`,
       ).then((res) => res.json());
       setGithubProfileData(userProfile);
     } catch (error) {
@@ -23,9 +21,24 @@ const App = () => {
     }
   };
 
-  const uiRender = () => {
-    if (!searchAttempted) return null;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchProfile(DEFAULT_USERNAME);
+  }, []);
 
+  const getUserProfile = async (e) => {
+    e.preventDefault();
+    const username = githubUserName.trim();
+    if (!username) return;
+    await fetchProfile(username);
+  };
+
+  const handleReset = () => {
+    setGithubUserName(DEFAULT_USERNAME);
+    fetchProfile(DEFAULT_USERNAME);
+  };
+
+  const uiRender = () => {
     if (isLoading) {
       return (
         <div className="skeleton" aria-busy="true" aria-label="Loading profile">
@@ -53,11 +66,7 @@ const App = () => {
           <button
             type="button"
             className="not-found__action"
-            onClick={() => {
-              setSearchAttempted(false);
-              setGithubProfileData(null);
-              setGithubUserName("");
-            }}
+            onClick={handleReset}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M3 12h18M3 12l4 4M3 12l4-4" />
